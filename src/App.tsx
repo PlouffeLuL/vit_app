@@ -4,12 +4,14 @@ import { PanneauArrondi } from './components/PanneauArrondi'
 import { useReglages } from './hooks/useReglages'
 import { textePrecision } from './lib/mesure'
 import { Calculatrice } from './pages/Calculatrice'
+import { Diagonale } from './pages/Diagonale'
 import { Diviseur } from './pages/Diviseur'
 
 // Ajouter un outil = ajouter une page et une ligne ici.
 const OUTILS = [
-  { id: 'calculatrice', nom: 'Calculatrice po/mm', Page: Calculatrice },
+  { id: 'calculatrice', nom: 'Calculatrice', Page: Calculatrice },
   { id: 'diviseur', nom: 'Diviseur de longueur', Page: Diviseur },
+  { id: 'diagonale', nom: "Diagonale d'angle", Page: Diagonale },
 ]
 
 const SYMBOLE_DIRECTION = { proche: '≈', haut: '↑', bas: '↓' }

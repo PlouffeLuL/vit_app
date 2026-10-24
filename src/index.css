@@ -226,7 +226,7 @@ main {
 }
 
 .resultat-note::after {
-  content: ' ›';
+  content: '\00a0›';
 }
 
 .resultat-ecart {
@@ -638,4 +638,61 @@ main {
   .tiroir {
     transition: none;
   }
+}
+
+/* ---------- Diagonale d'angle ---------- */
+
+.diagonale .clavier {
+  height: min(60dvh, 500px);
+}
+
+.champs-diagonale {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  gap: 8px;
+}
+
+.champ-choix {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 2px solid var(--bordure);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.champ-choix .champ-valeur {
+  font-size: 1.15rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Le champ que le clavier remplit. */
+.champ-choix[aria-pressed='true'] {
+  border-color: var(--accent);
+}
+
+.aide {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--texte-doux);
+}
+
+.clavier-titre {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: var(--texte-doux);
+}
+
+.clavier button:disabled {
+  opacity: 0.4;
+}
+
+.ecran-diagonale {
+  justify-content: flex-start;
 }

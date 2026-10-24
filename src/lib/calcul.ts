@@ -50,6 +50,16 @@ function lireMesure(j: Jeton): number {
   return versMm(j)
 }
 
+/**
+ * Distance entre les bouts libres de deux côtés qui se rejoignent à l'angle donné
+ * (loi des cosinus). Sert à vérifier un angle en mesurant la diagonale.
+ */
+export function diagonale(aMm: number, bMm: number, angleDegres: number): number {
+  if (!(angleDegres > 0 && angleDegres < 180)) throw new ErreurCalcul("L'angle doit être entre 0 et 180°")
+  const angle = (angleDegres * Math.PI) / 180
+  return Math.sqrt(aMm * aMm + bMm * bMm - 2 * aMm * bMm * Math.cos(angle))
+}
+
 /** Positions des trous à espacement égal, sans trou aux bouts. */
 export function diviserLongueur(longueurMm: number, trous: number) {
   if (!Number.isInteger(trous) || trous < 1) throw new ErreurCalcul('Nombre de trous invalide')

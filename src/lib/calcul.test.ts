@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { diviserLongueur, ErreurCalcul, evaluer, type Jeton } from './calcul'
+import { diagonale, diviserLongueur, ErreurCalcul, evaluer, type Jeton } from './calcul'
 import { arrondirMm, formaterFraction, mmVersPouces, poucesVersMm } from './mesure'
 
 const po = (valeur: number) => ({ valeur, unite: 'po' }) as const
@@ -44,6 +44,28 @@ describe('evaluer', () => {
     expect(() => evaluer([po(1), '+'] as Jeton[])).toThrow(ErreurCalcul)
     expect(() => evaluer(['+'] as Jeton[])).toThrow(ErreurCalcul)
     expect(() => evaluer([po(1), po(2), po(3)])).toThrow(ErreurCalcul)
+  })
+})
+
+describe('diagonale', () => {
+  const enPouces = (a: number, b: number, angle: number) =>
+    mmVersPouces(diagonale(poucesVersMm(a), poucesVersMm(b), angle))
+
+  it('22" et 31" à 90° → 38,01" (Pythagore)', () => {
+    expect(enPouces(22, 31, 90)).toBeCloseTo(Math.sqrt(22 ** 2 + 31 ** 2), 9)
+  })
+
+  it('22" et 31" à 120° → √2127 ≈ 46,12"', () => {
+    expect(enPouces(22, 31, 120)).toBeCloseTo(Math.sqrt(2127), 9)
+  })
+
+  it('côtés égaux à 60° → triangle équilatéral', () => {
+    expect(enPouces(10, 10, 60)).toBeCloseTo(10, 9)
+  })
+
+  it('angle hors de 0–180°', () => {
+    expect(() => diagonale(100, 100, 0)).toThrow(ErreurCalcul)
+    expect(() => diagonale(100, 100, 180)).toThrow(ErreurCalcul)
   })
 })
 
