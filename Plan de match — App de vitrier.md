@@ -88,13 +88,13 @@ Le choix du thème se fait dans le menu latéral.
 
 On commence par la logique de calcul, testée, avant l'interface : c'est là que les erreurs coûtent cher sur un chantier.
 
-- [ ] Créer le projet Vite React + TypeScript, ajouter Vitest et le plugin PWA
-- [ ] Écrire `mesure.ts` (po ↔ mm, fractions, arrondi haut/bas/proche, écart) et ses tests
-- [ ] Écrire `calcul.ts` (expression mixte po/mm, priorité × ÷ avant + −) et ses tests
-- [ ] Construire `Clavier` et `Resultat`, puis la page Calculatrice
-- [ ] Ajouter `ChoixArrondi`, l'historique et la sauvegarde des réglages
-- [ ] Construire la page Diviseur avec les mêmes composants
-- [ ] Ajouter le menu latéral et le thème clair/sombre
+- [x] Créer le projet Vite React + TypeScript, ajouter Vitest et le plugin PWA
+- [x] Écrire `mesure.ts` (po ↔ mm, fractions, arrondi haut/bas/proche, écart) et ses tests
+- [x] Écrire `calcul.ts` (expression mixte po/mm, priorité × ÷ avant + −) et ses tests
+- [x] Construire `Clavier` et `Resultat`, puis la page Calculatrice
+- [x] Ajouter `ChoixArrondi`, l'historique et la sauvegarde des réglages
+- [x] Construire la page Diviseur avec les mêmes composants
+- [x] Ajouter le menu latéral et le thème clair/sombre
 - [ ] Configurer l'installation (icône, nom, hors ligne) et tester sur iPhone et Android
 
 **Tests à faire passer**
