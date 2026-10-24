@@ -1,15 +1,14 @@
 import { useState } from 'react'
-import { ChoixArrondi } from '../components/ChoixArrondi'
 import { Clavier } from '../components/Clavier'
 import { Resultat } from '../components/Resultat'
-import type { ReglagesApi } from '../hooks/useReglages'
 import { diviserLongueur } from '../lib/calcul'
-import { versMm } from '../lib/mesure'
+import { texteArrondi, versMm } from '../lib/mesure'
 import { formaterSaisie, type Saisie, saisieVide, versMesure } from '../lib/saisie'
+import type { PageProps } from './page'
 
 const TROUS_MAX = 99
 
-export function Diviseur({ reglages, modifier }: ReglagesApi) {
+export function Diviseur({ reglages, ouvrirArrondi }: PageProps) {
   const [saisie, setSaisie] = useState<Saisie>(saisieVide('po'))
   const [trous, setTrous] = useState(2)
 
@@ -39,8 +38,10 @@ export function Diviseur({ reglages, modifier }: ReglagesApi) {
               </button>
             </div>
           </div>
-          <ChoixArrondi precision={precision} direction={direction} onChange={modifier} />
         </div>
+        <button type="button" className="resultat-note" onClick={ouvrirArrondi}>
+          {texteArrondi(precision, direction)}
+        </button>
 
         {division ? (
           <div className="liste-trous">

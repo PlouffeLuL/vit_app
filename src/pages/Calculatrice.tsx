@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { ChoixArrondi } from '../components/ChoixArrondi'
+import { createPortal } from 'react-dom'
 import { Clavier } from '../components/Clavier'
 import { Resultat } from '../components/Resultat'
-import type { ReglagesApi } from '../hooks/useReglages'
+import type { EntreeHistorique } from '../hooks/useReglages'
 import { ErreurCalcul, evaluer, type Jeton, type Operateur } from '../lib/calcul'
 import { formaterMm, type Mesure } from '../lib/mesure'
-import { estVide, formaterSaisie, type Saisie, saisieVide, versMesure } from '../lib/saisie'
+import { estVide, formaterFacteur, formaterSaisie, type Saisie, saisieVide, versMesure } from '../lib/saisie'
+import type { PageProps } from './page'
 
 /** Nombre déjà entré, avec le texte tel qu'affiché. */
 interface Terme {
@@ -22,15 +23,18 @@ const versJetons = (els: Element[]): Jeton[] => els.map((e) => (estOperateur(e) 
 const texteExpression = (els: Element[]) => els.map((e) => (estOperateur(e) ? e : e.texte)).join(' ')
 const termeResultat = (mm: number): Terme => ({ mesure: { valeur: mm, unite: 'mm' }, texte: formaterMm(mm) })
 
-export function Calculatrice({ reglages, modifier, ajouterHistorique }: ReglagesApi) {
+export function Calculatrice({ reglages, modifier, ajouterHistorique, ouvrirArrondi, enteteActions }: PageProps) {
   const [elements, setElements] = useState<Element[]>([])
   const [saisie, setSaisie] = useState<Saisie>(saisieVide('po'))
-  // Après « = », taper un chiffre recommence un calcul; un opérateur continue avec le résultat.
-  const [resultatAffiche, setResultatAffiche] = useState(false)
+  // Après « = » : le calcul qui a donné le résultat, affiché en haut.
+  // Taper un chiffre recommence alors un calcul; un opérateur continue avec le résultat.
+  const [calculTermine, setCalculTermine] = useState<string | null>(null)
   const [historiqueOuvert, setHistoriqueOuvert] = useState(false)
 
   const mesureSaisie = versMesure(saisie)
-  const enCours: Element[] = mesureSaisie ? [...elements, { mesure: mesureSaisie, texte: formaterSaisie(saisie) }] : elements
+  const precedent = elements[elements.length - 1]
+  const texteSaisie = precedent === '×' || precedent === '÷' ? formaterFacteur(saisie) : formaterSaisie(saisie)
+  const enCours: Element[] = mesureSaisie ? [...elements, { mesure: mesureSaisie, texte: texteSaisie }] : elements
   // Résultat en direct : on ignore un opérateur en attente à la fin.
   const aEvaluer = enCours.length && estOperateur(enCours[enCours.length - 1]) ? enCours.slice(0, -1) : enCours
 
@@ -45,9 +49,9 @@ export function Calculatrice({ reglages, modifier, ajouterHistorique }: Reglages
 
   const taper = (s: Saisie) => {
     // Changer d'unité (saisie vide) ne doit pas effacer le résultat.
-    if (resultatAffiche && !estVide(s)) {
+    if (calculTermine !== null && !estVide(s)) {
       setElements([])
-      setResultatAffiche(false)
+      setCalculTermine(null)
     }
     setSaisie(s)
   }
@@ -59,49 +63,54 @@ export function Calculatrice({ reglages, modifier, ajouterHistorique }: Reglages
     const dernier = base[base.length - 1]
     setElements(estOperateur(dernier) ? [...base.slice(0, -1), op] : [...base, op])
     setSaisie(saisieVide(saisie.unite))
-    setResultatAffiche(false)
+    setCalculTermine(null)
   }
 
   const egal = () => {
     if (erreur || aEvaluer.length < 3) return
-    ajouterHistorique({ expression: texteExpression(aEvaluer), mm })
+    const calcul = texteExpression(aEvaluer)
+    ajouterHistorique({ expression: calcul, mm })
     setElements([termeResultat(mm)])
     setSaisie(saisieVide(saisie.unite))
-    setResultatAffiche(true)
+    setCalculTermine(calcul)
   }
 
   const effacer = () => {
     setElements([])
     setSaisie(saisieVide(saisie.unite))
-    setResultatAffiche(false)
+    setCalculTermine(null)
   }
 
-  const reutiliser = (mmHistorique: number) => {
-    setElements([termeResultat(mmHistorique)])
+  const reutiliser = ({ expression, mm }: EntreeHistorique) => {
+    setElements([termeResultat(mm)])
     setSaisie(saisieVide(saisie.unite))
-    setResultatAffiche(true)
+    setCalculTermine(expression)
     setHistoriqueOuvert(false)
   }
 
-  const expression = texteExpression(elements) + (estVide(saisie) ? '' : ` ${formaterSaisie(saisie)}`)
+  const expression =
+    calculTermine !== null
+      ? `${calculTermine} =`
+      : texteExpression(elements) + (estVide(saisie) ? '' : ` ${texteSaisie}`)
 
   return (
     <div className="page calculatrice">
-      <div className="ecran">
-        <div className="ecran-haut">
-          <button type="button" className="bouton-texte" onClick={() => setHistoriqueOuvert(true)}>
+      {enteteActions &&
+        createPortal(
+          <button type="button" className="bouton-entete" onClick={() => setHistoriqueOuvert(true)}>
             Historique
-          </button>
-          <div className="expression" aria-live="polite">
-            {expression.trim() || '0'}
-          </div>
+          </button>,
+          enteteActions,
+        )}
+
+      <div className="ecran">
+        <div className="expression" aria-live="polite">
+          {expression.trim() || '0'}
         </div>
         {erreur ? (
           <div className="resultat erreur">{erreur}</div>
         ) : (
-          <Resultat mm={mm} precision={reglages.precision} direction={reglages.direction}>
-            <ChoixArrondi precision={reglages.precision} direction={reglages.direction} onChange={modifier} />
-          </Resultat>
+          <Resultat mm={mm} precision={reglages.precision} direction={reglages.direction} onArrondi={ouvrirArrondi} />
         )}
       </div>
 
@@ -136,7 +145,7 @@ export function Calculatrice({ reglages, modifier, ajouterHistorique }: Reglages
             <ul className="historique">
               {reglages.historique.map((h, i) => (
                 <li key={i}>
-                  <button type="button" onClick={() => reutiliser(h.mm)}>
+                  <button type="button" onClick={() => reutiliser(h)}>
                     <span className="historique-expression">{h.expression}</span>
                     <span className="historique-resultat">= {formaterMm(h.mm)}</span>
                   </button>

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { MenuLateral } from './components/MenuLateral'
+import { PanneauArrondi } from './components/PanneauArrondi'
 import { useReglages } from './hooks/useReglages'
+import { textePrecision } from './lib/mesure'
 import { Calculatrice } from './pages/Calculatrice'
 import { Diviseur } from './pages/Diviseur'
 
@@ -10,13 +12,19 @@ const OUTILS = [
   { id: 'diviseur', nom: 'Diviseur de longueur', Page: Diviseur },
 ]
 
+const SYMBOLE_DIRECTION = { proche: '≈', haut: '↑', bas: '↓' }
+
 export default function App() {
   const api = useReglages()
   const [actif, setActif] = useState(OUTILS[0].id)
   const [menuOuvert, setMenuOuvert] = useState(false)
+  const [arrondiOuvert, setArrondiOuvert] = useState(false)
+  const [enteteActions, setEnteteActions] = useState<HTMLElement | null>(null)
   const fermerMenu = useCallback(() => setMenuOuvert(false), [])
+  const ouvrirArrondi = useCallback(() => setArrondiOuvert(true), [])
+  const fermerArrondi = useCallback(() => setArrondiOuvert(false), [])
 
-  const { theme } = api.reglages
+  const { theme, precision, direction } = api.reglages
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     // Couleur de la barre d'état du téléphone, assortie au fond.
@@ -34,7 +42,20 @@ export default function App() {
           <span />
         </button>
         <h1>{outil.nom}</h1>
+        <div className="entete-actions">
+          <div className="entete-actions-outil" ref={setEnteteActions} />
+          <button
+            type="button"
+            className="bouton-entete"
+            aria-label={`Arrondi : ${textePrecision(precision)}`}
+            aria-expanded={arrondiOuvert}
+            onClick={() => setArrondiOuvert((o) => !o)}
+          >
+            {textePrecision(precision)} {SYMBOLE_DIRECTION[direction]}
+          </button>
+        </div>
       </header>
+      <PanneauArrondi ouvert={arrondiOuvert} onFermer={fermerArrondi} reglages={api.reglages} modifier={api.modifier} />
       <MenuLateral
         ouvert={menuOuvert}
         onFermer={fermerMenu}
@@ -45,7 +66,7 @@ export default function App() {
         onTheme={(t) => api.modifier({ theme: t })}
       />
       <main>
-        <outil.Page {...api} />
+        <outil.Page {...api} ouvrirArrondi={ouvrirArrondi} enteteActions={enteteActions} />
       </main>
     </div>
   )

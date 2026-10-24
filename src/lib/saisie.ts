@@ -11,11 +11,9 @@ export interface Saisie {
   mm: string
 }
 
-export type Champ = 'entier' | 'num' | 'mm'
+export type Champ = 'entier' | 'num' | 'den' | 'mm'
 
-export const DENOMINATEURS = [2, 4, 8, 16, 32, 64]
-
-const LONGUEUR_MAX: Record<Champ, number> = { entier: 5, num: 2, mm: 8 }
+const LONGUEUR_MAX: Record<Champ, number> = { entier: 5, num: 2, den: 2, mm: 8 }
 
 export const saisieVide = (unite: Unite): Saisie => ({ unite, entier: '', num: '', den: '', mm: '' })
 
@@ -35,28 +33,22 @@ export function ajouter(s: Saisie, champ: Champ, car: string): Saisie {
   return { ...s, [champ]: actuel === '0' ? car : actuel + car }
 }
 
-export function choisirDen(s: Saisie, den: number): Saisie {
-  return { ...s, den: String(den) }
+/** Retour arrière dans un seul pavé : efface son dernier caractère. */
+export function retour(s: Saisie, champ: Champ): Saisie {
+  return { ...s, [champ]: s[champ].slice(0, -1) }
 }
 
-/** Retour arrière : dénominateur, puis numérateur, puis entier. */
-export function retour(s: Saisie): Saisie {
-  if (s.unite === 'mm') return { ...s, mm: s.mm.slice(0, -1) }
-  if (s.den) return { ...s, den: '' }
-  if (s.num) return { ...s, num: s.num.slice(0, -1) }
-  return { ...s, entier: s.entier.slice(0, -1) }
-}
-
-/** null si la saisie est vide ou incomplète (numérateur sans dénominateur). */
+/** null si la saisie est vide ou incomplète (numérateur sans dénominateur, dénominateur nul). */
 export function versMesure(s: Saisie): Mesure | null {
   if (estVide(s)) return null
   if (s.unite === 'mm') {
     const valeur = Number(s.mm.replace(',', '.'))
     return Number.isFinite(valeur) ? { valeur, unite: 'mm' } : null
   }
-  if (s.num && !s.den) return null
-  const num = s.num ? Number(s.num) : 0
-  return { valeur: fractionVersPouces(Number(s.entier || 0), num, Number(s.den || 0)), unite: 'po' }
+  const den = Number(s.den || 0)
+  if (s.den && den === 0) return null
+  if (s.num && !den) return null
+  return { valeur: fractionVersPouces(Number(s.entier || 0), Number(s.num || 0), den), unite: 'po' }
 }
 
 /** Ex. « 24 3/4" », « 24 3/ » (en cours), « 12,5 mm ». */
@@ -67,4 +59,9 @@ export function formaterSaisie(s: Saisie): string {
   const frac = `${s.num || '?'}/${s.den}`
   const texte = s.entier ? `${s.entier} ${frac}` : frac
   return s.den ? `${texte}"` : texte
+}
+
+/** Après × ou ÷, le nombre est un simple facteur : on l'affiche sans unité (« 2 », « 1 1/2 »). */
+export function formaterFacteur(s: Saisie): string {
+  return s.unite === 'mm' ? s.mm : formaterSaisie(s).replace(/"$/, '')
 }

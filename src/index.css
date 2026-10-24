@@ -89,7 +89,11 @@ h2 {
 }
 
 .entete h1 {
-  font-size: 1.1rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.05rem;
   font-weight: 600;
 }
 
@@ -132,6 +136,25 @@ main {
   padding: 8px 16px 12px;
 }
 
+.entete-actions,
+.entete-actions-outil {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.entete-actions {
+  margin-left: auto;
+}
+
+.bouton-entete {
+  padding: 8px 10px;
+  white-space: nowrap;
+  border-radius: 8px;
+  background: var(--touche);
+  font-size: 0.95rem;
+}
+
 .bouton-texte {
   padding: 8px 4px;
   color: var(--texte-doux);
@@ -146,46 +169,64 @@ main {
 
 /* ---------- Calculatrice ---------- */
 
-.ecran-haut {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
+/* Du plus discret au plus important : ce qu'on a tapé, puis la fraction, puis les mm. */
 .expression {
-  flex: 1;
-  min-width: 0;
   text-align: right;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: var(--texte-doux);
   overflow-wrap: anywhere;
+  padding: 0 4px;
 }
 
+/* Carte du résultat : bien séparée de la ligne de calcul au-dessus. */
 .resultat {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
-
-.resultat .grand {
-  font-size: 2rem;
-  font-weight: 600;
+  gap: 2px;
+  padding: 12px 14px 4px;
+  border: 1px solid var(--bordure);
+  border-radius: 14px;
+  background: var(--surface);
   font-variant-numeric: tabular-nums;
 }
 
-.resultat .resultat-mm.grand {
-  font-size: 1.5rem;
-  font-weight: 500;
+.resultat-rangee {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.resultat-etiquette {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--texte-doux);
 }
 
-.resultat-fraction-ligne {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap-reverse;
-  justify-content: flex-end;
-  gap: 8px 12px;
+.resultat .resultat-fraction {
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.resultat .resultat-mm {
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.resultat-note {
+  align-self: flex-end;
+  padding: 8px 0;
+  font-size: 0.85rem;
+  color: var(--texte-doux);
+  text-align: right;
+}
+
+.resultat-note::after {
+  content: ' ›';
 }
 
 .resultat-ecart {
@@ -200,22 +241,55 @@ main {
 
 .choix-arrondi {
   display: flex;
+  flex-direction: column;
   gap: 6px;
 }
 
-.choix-arrondi select {
-  padding: 6px 8px;
-  border: 1px solid var(--bordure);
-  border-radius: 8px;
+/* ---------- Panneau d'arrondi (sous l'en-tête) ---------- */
+
+.voile.voile-arrondi {
+  z-index: 25;
+}
+
+.panneau-arrondi {
+  position: fixed;
+  top: calc(52px + env(safe-area-inset-top));
+  left: 8px;
+  right: 8px;
+  z-index: 26;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 14px;
   background: var(--surface);
-  font-size: 0.95rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.25);
+}
+
+.panneau-arrondi-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panneau-arrondi h2 {
+  font-size: 1rem;
+}
+
+.bascule-precision {
+  flex-wrap: wrap;
+}
+
+.bascule-precision button {
+  flex: 1 0 22%;
+  padding: 10px 4px;
 }
 
 /* ---------- Clavier ---------- */
 
 .clavier {
   flex-shrink: 0;
-  height: min(62dvh, 480px);
+  height: min(66dvh, 540px);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -237,18 +311,13 @@ main {
 }
 
 .clavier-haut {
-  display: flex;
-  gap: 6px;
-  height: 44px;
+  height: 40px;
   flex-shrink: 0;
 }
 
-.clavier-haut .bascule {
-  flex: 1;
-}
-
-.touche-retour {
-  width: 72px;
+.clavier .touche-retour {
+  font-size: 1.1rem;
+  color: var(--texte-doux);
 }
 
 .bascule {
@@ -279,7 +348,7 @@ main {
 
 .paves-fraction {
   display: grid;
-  grid-template-rows: 4fr 2fr;
+  grid-template-rows: 1fr 1fr;
   gap: 10px;
 }
 
@@ -295,10 +364,6 @@ main {
   flex: 1;
 }
 
-.pave .large {
-  grid-column: span 3;
-}
-
 .pave .large-2 {
   grid-column: span 2;
 }
@@ -309,8 +374,14 @@ main {
 }
 
 /* Les deux pavés de fraction se distinguent du pavé de l'entier. */
-.pave-num button {
+.clavier .pave-num button,
+.clavier .pave-den button {
   background: var(--touche-op);
+}
+
+.clavier .pave-num button:active,
+.clavier .pave-den button:active {
+  background: var(--touche-appuyee);
 }
 
 /* Barre de fraction entre numérateur et dénominateur. */
@@ -327,11 +398,6 @@ main {
   height: 2px;
   border-radius: 1px;
   background: var(--texte-doux);
-}
-
-.pave-den button[aria-pressed='true'] {
-  background: var(--accent);
-  color: var(--accent-texte);
 }
 
 .clavier-bas {
@@ -417,7 +483,7 @@ main {
 
 /* Clavier plus bas pour laisser voir plus de trous. */
 .diviseur .clavier {
-  height: min(52dvh, 420px);
+  height: min(60dvh, 500px);
 }
 
 .diviseur-entrees {
@@ -521,7 +587,8 @@ main {
   bottom: 0;
   left: 0;
   z-index: 31;
-  width: min(80vw, 300px);
+  width: min(85vw, 320px);
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 12px;

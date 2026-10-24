@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
+import { type ReactNode, useState } from 'react'
 import type { Unite } from '../lib/mesure'
-import { ajouter, type Champ, choisirDen, DENOMINATEURS, retour, type Saisie, saisieVide } from '../lib/saisie'
+import { ajouter, type Champ, retour, type Saisie, saisieVide } from '../lib/saisie'
 
 interface Props {
   saisie: Saisie
@@ -11,81 +11,62 @@ interface Props {
 
 const CHIFFRES = ['7', '8', '9', '4', '5', '6', '1', '2', '3']
 
-export function Clavier({ saisie, onSaisie, children }: Props) {
-  const changerUnite = (unite: Unite) => {
-    if (unite !== saisie.unite) onSaisie(saisieVide(unite))
-  }
+const NOMS: Record<Champ, string> = { entier: 'entier', num: 'numérateur', den: 'dénominateur', mm: 'millimètres' }
 
-  const pave = (champ: Champ, classe: string, derniers: ReactNode) => (
-    <div className={`pave ${classe}`}>
+export function Clavier({ saisie, onSaisie, children }: Props) {
+  // Le mode affiché est indépendant du nombre en cours : changer d'unité n'efface rien.
+  // Taper dans l'autre unité commence un nouveau nombre (normalement après un opérateur).
+  const [mode, setMode] = useState<Unite>(saisie.unite)
+  const taper = (champ: Champ, car: string) =>
+    onSaisie(ajouter(saisie.unite === mode ? saisie : saisieVide(mode), champ, car))
+
+  // Chaque pavé : 7-8-9 / 4-5-6 / 1-2-3 / [virgule] 0 ⌫, avec son propre retour arrière.
+  const pave = (champ: Champ) => (
+    <div className={`pave pave-${champ}`}>
       {CHIFFRES.map((c) => (
-        <button key={c} type="button" onClick={() => onSaisie(ajouter(saisie, champ, c))}>
+        <button key={c} type="button" onClick={() => taper(champ, c)}>
           {c}
         </button>
       ))}
-      {derniers}
+      {champ === 'mm' && (
+        <button type="button" onClick={() => taper('mm', ',')}>
+          ,
+        </button>
+      )}
+      <button type="button" className={champ === 'mm' ? '' : 'large-2'} onClick={() => taper(champ, '0')}>
+        0
+      </button>
+      <button
+        type="button"
+        className="touche-retour"
+        aria-label={`Effacer le dernier chiffre (${NOMS[champ]})`}
+        onClick={() => onSaisie(retour(saisie, champ))}
+      >
+        ⌫
+      </button>
     </div>
   )
 
   return (
     <div className="clavier">
-      <div className="clavier-haut">
-        <div className="bascule" role="group" aria-label="Unité">
-          {(['po', 'mm'] as const).map((u) => (
-            <button key={u} type="button" aria-pressed={saisie.unite === u} onClick={() => changerUnite(u)}>
-              {u === 'po' ? 'pouces' : 'mm'}
-            </button>
-          ))}
-        </div>
-        <button type="button" className="touche-retour" aria-label="Retour arrière" onClick={() => onSaisie(retour(saisie))}>
-          ⌫
-        </button>
+      <div className="bascule clavier-haut" role="group" aria-label="Unité">
+        {(['po', 'mm'] as const).map((u) => (
+          <button key={u} type="button" aria-pressed={mode === u} onClick={() => setMode(u)}>
+            {u === 'po' ? 'pouces' : 'mm'}
+          </button>
+        ))}
       </div>
 
-      {saisie.unite === 'po' ? (
+      {mode === 'po' ? (
         <div className="paves-pouces">
-          {pave(
-            'entier',
-            'pave-entier',
-            <button type="button" className="large" onClick={() => onSaisie(ajouter(saisie, 'entier', '0'))}>
-              0
-            </button>,
-          )}
+          {pave('entier')}
           <div className="paves-fraction">
-            {pave(
-              'num',
-              'pave-num',
-              <button type="button" className="large" onClick={() => onSaisie(ajouter(saisie, 'num', '0'))}>
-                0
-              </button>,
-            )}
-            <div className="pave pave-den">
-              {DENOMINATEURS.map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  aria-pressed={saisie.den === String(d)}
-                  onClick={() => onSaisie(choisirDen(saisie, d))}
-                >
-                  /{d}
-                </button>
-              ))}
-            </div>
+            {pave('num')}
+            {pave('den')}
           </div>
         </div>
       ) : (
-        pave(
-          'mm',
-          'pave-mm',
-          <>
-            <button type="button" onClick={() => onSaisie(ajouter(saisie, 'mm', ','))}>
-              ,
-            </button>
-            <button type="button" className="large-2" onClick={() => onSaisie(ajouter(saisie, 'mm', '0'))}>
-              0
-            </button>
-          </>,
-        )
+        pave('mm')
       )}
 
       {children && <div className="clavier-bas">{children}</div>}

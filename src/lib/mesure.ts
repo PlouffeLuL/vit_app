@@ -101,6 +101,19 @@ export function formaterMm(mm: number, decimales = 2): string {
   return `${formaterNombre(mm, decimales)} mm`
 }
 
+export const textePrecision = (p: Precision) => (p === 1 ? '1"' : `1/${p}`)
+
+const TEXTE_DIRECTION: Record<Direction, string> = {
+  proche: 'au plus proche',
+  haut: 'vers le haut',
+  bas: 'vers le bas',
+}
+
+/** Ex. « arrondi au 1/16, au plus proche ». */
+export function texteArrondi(precision: Precision, direction: Direction): string {
+  return `arrondi au ${textePrecision(precision)}, ${TEXTE_DIRECTION[direction]}`
+}
+
 /** Ex. « +0,3 mm », « -1,2 mm », « 0 mm ». */
 export function formaterEcart(ecartMm: number, decimales = 2): string {
   const texte = formaterNombre(ecartMm, decimales)

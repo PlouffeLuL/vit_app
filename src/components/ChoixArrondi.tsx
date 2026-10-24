@@ -1,4 +1,4 @@
-import { type Direction, type Precision, PRECISIONS } from '../lib/mesure'
+import { type Direction, type Precision, PRECISIONS, textePrecision } from '../lib/mesure'
 
 interface Props {
   precision: Precision
@@ -7,7 +7,7 @@ interface Props {
 }
 
 const DIRECTIONS: { valeur: Direction; texte: string }[] = [
-  { valeur: 'proche', texte: '≈ proche' },
+  { valeur: 'proche', texte: 'proche' },
   { valeur: 'haut', texte: '↑ haut' },
   { valeur: 'bas', texte: '↓ bas' },
 ]
@@ -15,28 +15,25 @@ const DIRECTIONS: { valeur: Direction; texte: string }[] = [
 export function ChoixArrondi({ precision, direction, onChange }: Props) {
   return (
     <div className="choix-arrondi">
-      <select
-        aria-label="Précision d'arrondi"
-        value={precision}
-        onChange={(e) => onChange({ precision: Number(e.target.value) as Precision })}
-      >
+      <div className="bascule bascule-precision" role="group" aria-label="Précision d'arrondi">
         {PRECISIONS.map((p) => (
-          <option key={p} value={p}>
-            {p === 1 ? '1"' : `1/${p}`}
-          </option>
+          <button key={p} type="button" aria-pressed={precision === p} onClick={() => onChange({ precision: p })}>
+            {textePrecision(p)}
+          </button>
         ))}
-      </select>
-      <select
-        aria-label="Direction d'arrondi"
-        value={direction}
-        onChange={(e) => onChange({ direction: e.target.value as Direction })}
-      >
+      </div>
+      <div className="bascule" role="group" aria-label="Direction d'arrondi">
         {DIRECTIONS.map((d) => (
-          <option key={d.valeur} value={d.valeur}>
+          <button
+            key={d.valeur}
+            type="button"
+            aria-pressed={direction === d.valeur}
+            onClick={() => onChange({ direction: d.valeur })}
+          >
             {d.texte}
-          </option>
+          </button>
         ))}
-      </select>
+      </div>
     </div>
   )
 }
