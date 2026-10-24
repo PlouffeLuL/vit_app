@@ -2,6 +2,8 @@
 
 Application de chantier pour vitriers : calculs en pouces et en millimètres, sur le téléphone, même sans réseau.
 
+**Adresse :** https://plouffelul.github.io/vit_app/
+
 C'est une application web installable (PWA). On l'ajoute à l'écran d'accueil depuis le navigateur, sans passer par l'App Store ni le Play Store. Elle s'ouvre ensuite en plein écran comme une vraie application et fonctionne hors ligne.
 
 ## Les outils

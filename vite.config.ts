@@ -5,6 +5,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Publiée sur GitHub Pages à https://plouffelul.github.io/vit_app/
+  base: '/vit_app/',
   plugins: [
     react(),
     VitePWA({
@@ -13,7 +15,7 @@ export default defineConfig({
       manifest: {
         name: 'Vitrier',
         short_name: 'Vitrier',
-        description: 'Calculatrice pouces/millimètres et diviseur de longueur',
+        description: "Calculatrice pouces/millimètres, diviseur de longueur et diagonale d'angle",
         lang: 'fr',
         display: 'standalone',
         theme_color: '#f2f2f2',
