@@ -48,6 +48,7 @@ body,
 
 body {
   background: var(--fond);
+  overflow: hidden;
   overscroll-behavior: none;
 }
 
@@ -72,8 +73,10 @@ h2 {
 
 /* ---------- Structure ---------- */
 
+/* L'appli occupe exactement l'écran : la page elle-même ne défile jamais. */
 .app {
-  height: 100dvh;
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
@@ -118,22 +121,31 @@ h2 {
 main {
   flex: 1;
   min-height: 0;
-}
-
-.page {
-  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.ecran {
+.page {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+}
+
+/* Prend la place qui reste au-dessus du clavier; si elle manque, seul cet espace défile. */
+.ecran {
+  flex: 1 1 0;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   padding: 8px 16px 12px;
+  overflow-y: auto;
+}
+
+/* Calculatrice : contenu collé en bas (une marge auto reste défilable, contrairement à flex-end). */
+.ecran > :first-child {
+  margin-top: auto;
 }
 
 .entete-actions,
@@ -287,16 +299,17 @@ main {
 
 /* ---------- Clavier ---------- */
 
+/* 540 px au plus; sur un petit écran, le clavier rétrécit pour que tout reste visible. */
 .clavier {
-  flex-shrink: 0;
-  height: min(66dvh, 540px);
+  flex: 0 1 540px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   padding: 0 8px 8px;
   overflow: hidden;
   background: var(--surface);
   border-top: 1px solid var(--bordure);
-  transition: height 0.2s ease-out;
+  transition: flex-basis 0.2s ease-out;
 }
 
 .clavier-contenu {
@@ -376,26 +389,35 @@ main {
   flex: 1;
   min-height: 0;
   display: grid;
+  grid-template-rows: minmax(0, 1fr);
   grid-template-columns: 1.25fr 1fr;
   gap: 10px;
 }
 
 .paves-fraction {
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   gap: 10px;
 }
 
+/* minmax(0, …) : les touches rapetissent au lieu de déborder sur les autres rangées. */
 .pave {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 1fr;
+  grid-auto-rows: minmax(0, 1fr);
   gap: 6px;
   min-height: 0;
 }
 
 .pave-mm {
   flex: 1;
+}
+
+/* Safari donne aux boutons une hauteur minimale et un rembourrage qui les feraient déborder. */
+.pave button,
+.clavier-haut button {
+  min-height: 0;
+  padding: 0 4px;
 }
 
 .pave .large-2 {
@@ -502,13 +524,13 @@ main {
 
 /* ---------- Diviseur ---------- */
 
-.ecran-diviseur {
-  justify-content: flex-start;
+.ecran-diviseur > :first-child {
+  margin-top: 0;
 }
 
 /* Clavier plus bas pour laisser voir plus de trous. */
 .diviseur .clavier {
-  height: min(60dvh, 500px);
+  flex-basis: 500px;
 }
 
 .diviseur-entrees {
@@ -668,7 +690,7 @@ main {
 /* ---------- Diagonale d'angle ---------- */
 
 .diagonale .clavier {
-  height: min(60dvh, 500px);
+  flex-basis: 500px;
 }
 
 .champs-diagonale {
@@ -718,18 +740,64 @@ main {
   opacity: 0.4;
 }
 
-.ecran-diagonale {
-  justify-content: flex-start;
+.ecran-diagonale > :first-child {
+  margin-top: 0;
 }
 
 /* Clavier replié : seule la poignée reste (plus fort que les hauteurs propres à chaque outil). */
 .page .clavier.replie {
-  height: 27px;
+  flex-basis: 27px;
   padding-bottom: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .clavier {
     transition: none;
+  }
+}
+
+/* Petits écrans : résultat et rangées du clavier plus compacts pour garder des touches assez grandes. */
+@media (max-height: 720px) {
+  .ecran {
+    min-height: 140px;
+    gap: 4px;
+    padding: 4px 16px 8px;
+  }
+
+  .resultat {
+    padding: 6px 12px 0;
+  }
+
+  .resultat .resultat-fraction {
+    font-size: 1.9rem;
+  }
+
+  .resultat .resultat-mm {
+    font-size: 1.25rem;
+  }
+
+  .resultat-note {
+    padding: 4px 0;
+  }
+
+  .clavier-haut {
+    height: 34px;
+  }
+
+  .clavier-bas {
+    height: 44px;
+  }
+
+  .clavier-poignee {
+    height: 22px;
+  }
+
+  .page .clavier.replie {
+    flex-basis: 23px;
+  }
+
+  .pave,
+  .clavier-contenu {
+    gap: 5px;
   }
 }

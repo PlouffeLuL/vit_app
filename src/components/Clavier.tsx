@@ -76,7 +76,7 @@ export function Clavier({ saisie, onSaisie, degres = false, children }: Props) {
     if (!g || !ref.current) return
     const dy = e.clientY - g.y
     if (Math.abs(dy) > 4) g.bouge = true
-    ref.current.style.height = `${Math.min(g.max, Math.max(g.min, g.depart - dy))}px`
+    ref.current.style.flexBasis = `${Math.min(g.max, Math.max(g.min, g.depart - dy))}px`
   }
 
   const finGlisse = (e: PointerEvent<HTMLDivElement>, annule = false) => {
@@ -85,7 +85,7 @@ export function Clavier({ saisie, onSaisie, degres = false, children }: Props) {
     if (!g || !el) return
     glisse.current = null
     el.classList.remove('glisse')
-    el.style.height = ''
+    el.style.flexBasis = ''
     const dy = e.clientY - g.y
     if (annule) return
     if (!g.bouge) setReplie((r) => !r)
