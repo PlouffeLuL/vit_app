@@ -13,8 +13,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Vitrier',
-        short_name: 'Vitrier',
+        name: 'TradeCalc',
+        short_name: 'TradeCalc',
         description: "Calculatrice pouces/millimètres, diviseur de longueur et diagonale d'angle",
         lang: 'fr',
         display: 'standalone',

@@ -1,6 +1,6 @@
-# Vitrier
+# TradeCalc
 
-Application de chantier pour vitriers : calculs en pouces et en millimètres, sur le téléphone, même sans réseau.
+Application de chantier pour les gens de métier (vitriers, menuisiers, ébénistes…) : calculs en pouces et en millimètres, sur le téléphone, même sans réseau.
 
 **Adresse :** https://plouffelul.github.io/vit_app/
 
