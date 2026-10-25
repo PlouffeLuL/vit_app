@@ -28,9 +28,9 @@ Dans chaque outil, la petite barre en haut du clavier sert de poignée : on la g
 
 ### Diviseur de longueur
 
-On entre une longueur totale et un nombre de trous. L'application donne l'espacement et la position de chaque trou, mesurée depuis le début, à espacement égal et sans trou aux bouts.
+On entre une longueur totale et un nombre de repères (trous, montants, marques…). L'application donne l'espacement et la position de chaque repère, mesurée depuis le début, à espacement égal et sans repère aux bouts.
 
-Exemple : 20" et 4 trous donnent un espacement de 4", et des trous à 4, 8, 12 et 16".
+Exemple : 20" et 4 repères donnent un espacement de 4", et des repères à 4, 8, 12 et 16".
 
 ### Diagonale d'angle
 

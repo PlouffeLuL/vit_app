@@ -70,7 +70,7 @@ describe('diagonale', () => {
 })
 
 describe('diviserLongueur', () => {
-  it('20" et 4 trous → 4, 8, 12, 16"', () => {
+  it('20" et 4 repères → 4, 8, 12, 16"', () => {
     const { espacementMm, positionsMm } = diviserLongueur(poucesVersMm(20), 4)
     expect(formaterFraction(arrondirMm(espacementMm, 16, 'proche').fraction)).toBe('4"')
     expect(positionsMm.map((p) => formaterFraction(arrondirMm(p, 16, 'proche').fraction))).toEqual([
@@ -81,7 +81,7 @@ describe('diviserLongueur', () => {
     ])
   })
 
-  it('nombre de trous invalide', () => {
+  it('nombre de repères invalide', () => {
     expect(() => diviserLongueur(500, 0)).toThrow(ErreurCalcul)
     expect(() => diviserLongueur(500, 1.5)).toThrow(ErreurCalcul)
   })

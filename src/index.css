@@ -528,7 +528,7 @@ main {
   margin-top: 0;
 }
 
-/* Clavier plus bas pour laisser voir plus de trous. */
+/* Clavier plus bas pour laisser voir plus de repères. */
 .diviseur .clavier {
   flex-basis: 500px;
 }
@@ -572,7 +572,7 @@ main {
   font-size: 1.3rem;
 }
 
-.liste-trous {
+.liste-reperes {
   overflow-y: auto;
   min-height: 0;
   border-top: 1px solid var(--bordure);

@@ -6,17 +6,17 @@ import { texteArrondi, versMm } from '../lib/mesure'
 import { formaterSaisie, type Saisie, saisieVide, versMesure } from '../lib/saisie'
 import type { PageProps } from './page'
 
-const TROUS_MAX = 99
+const REPERES_MAX = 99
 
 export function Diviseur({ reglages, ouvrirArrondi }: PageProps) {
   const [saisie, setSaisie] = useState<Saisie>(saisieVide('po'))
-  const [trous, setTrous] = useState(2)
+  const [reperes, setReperes] = useState(2)
 
   const mesure = versMesure(saisie)
-  const division = mesure && mesure.valeur > 0 ? diviserLongueur(versMm(mesure), trous) : null
+  const division = mesure && mesure.valeur > 0 ? diviserLongueur(versMm(mesure), reperes) : null
   const { precision, direction } = reglages
 
-  const changerTrous = (n: number) => setTrous(Math.min(TROUS_MAX, Math.max(1, n)))
+  const changerReperes = (n: number) => setReperes(Math.min(REPERES_MAX, Math.max(1, n)))
 
   return (
     <div className="page diviseur">
@@ -27,13 +27,13 @@ export function Diviseur({ reglages, ouvrirArrondi }: PageProps) {
             <span className="champ-valeur">{formaterSaisie(saisie) || '—'}</span>
           </div>
           <div className="champ">
-            <span className="champ-libelle">Trous</span>
+            <span className="champ-libelle">Repères</span>
             <div className="compteur">
-              <button type="button" aria-label="Un trou de moins" onClick={() => changerTrous(trous - 1)}>
+              <button type="button" aria-label="Un repère de moins" onClick={() => changerReperes(reperes - 1)}>
                 −
               </button>
-              <span className="champ-valeur">{trous}</span>
-              <button type="button" aria-label="Un trou de plus" onClick={() => changerTrous(trous + 1)}>
+              <span className="champ-valeur">{reperes}</span>
+              <button type="button" aria-label="Un repère de plus" onClick={() => changerReperes(reperes + 1)}>
                 +
               </button>
             </div>
@@ -44,10 +44,10 @@ export function Diviseur({ reglages, ouvrirArrondi }: PageProps) {
         </button>
 
         {division ? (
-          <div className="liste-trous">
+          <div className="liste-reperes">
             <Resultat libelle="Espacement" mm={division.espacementMm} precision={precision} direction={direction} />
             {division.positionsMm.map((p, i) => (
-              <Resultat key={i} libelle={`Trou ${i + 1}`} mm={p} precision={precision} direction={direction} />
+              <Resultat key={i} libelle={`Repère ${i + 1}`} mm={p} precision={precision} direction={direction} />
             ))}
           </div>
         ) : (

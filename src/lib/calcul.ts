@@ -60,10 +60,10 @@ export function diagonale(aMm: number, bMm: number, angleDegres: number): number
   return Math.sqrt(aMm * aMm + bMm * bMm - 2 * aMm * bMm * Math.cos(angle))
 }
 
-/** Positions des trous à espacement égal, sans trou aux bouts. */
-export function diviserLongueur(longueurMm: number, trous: number) {
-  if (!Number.isInteger(trous) || trous < 1) throw new ErreurCalcul('Nombre de trous invalide')
-  const espacementMm = longueurMm / (trous + 1)
-  const positionsMm = Array.from({ length: trous }, (_, i) => (i + 1) * espacementMm)
+/** Positions des repères à espacement égal, sans repère aux bouts. */
+export function diviserLongueur(longueurMm: number, reperes: number) {
+  if (!Number.isInteger(reperes) || reperes < 1) throw new ErreurCalcul('Nombre de repères invalide')
+  const espacementMm = longueurMm / (reperes + 1)
+  const positionsMm = Array.from({ length: reperes }, (_, i) => (i + 1) * espacementMm)
   return { espacementMm, positionsMm }
 }
