@@ -19,8 +19,12 @@ Calculatrice + − × ÷ qui mélange pouces et millimètres dans le même calcu
 - Le bouton **pouces / mm** change de clavier sans effacer le nombre déjà tapé.
 - Chaque pavé a son propre **⌫**, qui efface seulement son dernier chiffre.
 - Après × ou ÷, le nombre est un simple multiplicateur sans unité : `24" ÷ 3` donne 8".
-- Le résultat s'affiche en **impérial** (fraction simplifiée) et en **métrique**.
-- **Historique** garde les derniers calculs. Toucher une ligne réutilise son résultat.
+- Le résultat s'affiche en direct en **impérial** (fraction simplifiée) et en **métrique**. Pas besoin de touche `=` : pour continuer à partir du résultat, on tape simplement un opérateur.
+- **C** efface le calcul et le range dans l'**Historique**. Toucher une ligne de l'historique réutilise son résultat.
+
+### Cacher le clavier
+
+Dans chaque outil, la petite barre en haut du clavier sert de poignée : on la glisse vers le bas pour cacher le clavier et voir plus de résultats, puis vers le haut pour le ramener. Un simple toucher sur la barre fonctionne aussi.
 
 ### Diviseur de longueur
 

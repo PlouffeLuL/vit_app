@@ -26,7 +26,7 @@ const termeResultat = (mm: number): Terme => ({ mesure: { valeur: mm, unite: 'mm
 export function Calculatrice({ reglages, modifier, ajouterHistorique, ouvrirArrondi, enteteActions }: PageProps) {
   const [elements, setElements] = useState<Element[]>([])
   const [saisie, setSaisie] = useState<Saisie>(saisieVide('po'))
-  // Après « = » : le calcul qui a donné le résultat, affiché en haut.
+  // Calcul repris de l'historique, affiché en haut au-dessus de son résultat.
   // Taper un chiffre recommence alors un calcul; un opérateur continue avec le résultat.
   const [calculTermine, setCalculTermine] = useState<string | null>(null)
   const [historiqueOuvert, setHistoriqueOuvert] = useState(false)
@@ -66,16 +66,11 @@ export function Calculatrice({ reglages, modifier, ajouterHistorique, ouvrirArro
     setCalculTermine(null)
   }
 
-  const egal = () => {
-    if (erreur || aEvaluer.length < 3) return
-    const calcul = texteExpression(aEvaluer)
-    ajouterHistorique({ expression: calcul, mm })
-    setElements([termeResultat(mm)])
-    setSaisie(saisieVide(saisie.unite))
-    setCalculTermine(calcul)
-  }
-
+  // Pas de touche « = » : le résultat est calculé en direct. C range le calcul dans l'historique.
   const effacer = () => {
+    if (!erreur && aEvaluer.length >= 3 && calculTermine === null) {
+      ajouterHistorique({ expression: texteExpression(aEvaluer), mm })
+    }
     setElements([])
     setSaisie(saisieVide(saisie.unite))
     setCalculTermine(null)
@@ -123,9 +118,6 @@ export function Calculatrice({ reglages, modifier, ajouterHistorique, ouvrirArro
             {op}
           </button>
         ))}
-        <button type="button" className="touche-egal" onClick={egal}>
-          =
-        </button>
       </Clavier>
 
       {historiqueOuvert && (

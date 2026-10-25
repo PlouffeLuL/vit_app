@@ -292,10 +292,44 @@ main {
   height: min(66dvh, 540px);
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 8px;
+  padding: 0 8px 8px;
+  overflow: hidden;
   background: var(--surface);
   border-top: 1px solid var(--bordure);
+  transition: height 0.2s ease-out;
+}
+
+.clavier-contenu {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* La petite lèvre qu'on tire pour cacher ou montrer le clavier. */
+.clavier-poignee {
+  flex-shrink: 0;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.clavier-poignee span {
+  width: 44px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--texte-doux);
+  opacity: 0.6;
+}
+
+/* Pendant le glissement, la hauteur suit le doigt sans animation. */
+.clavier.glisse {
+  transition: none;
 }
 
 .clavier button {
@@ -411,15 +445,6 @@ main {
   flex: 1;
   background: var(--touche-op);
   font-size: 1.5rem;
-}
-
-.clavier .touche-egal {
-  background: var(--accent);
-  color: var(--accent-texte);
-}
-
-.clavier .touche-egal:active {
-  opacity: 0.8;
 }
 
 /* ---------- Historique ---------- */
@@ -695,4 +720,16 @@ main {
 
 .ecran-diagonale {
   justify-content: flex-start;
+}
+
+/* Clavier replié : seule la poignée reste (plus fort que les hauteurs propres à chaque outil). */
+.page .clavier.replie {
+  height: 27px;
+  padding-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clavier {
+    transition: none;
+  }
 }
